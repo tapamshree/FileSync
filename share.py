@@ -21,7 +21,7 @@ HTML = f"""
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Neon File Node</title>
+<title>FileSync</title>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Inter:wght@400;600&display=swap');
@@ -205,7 +205,7 @@ button:hover {{
 <div class="container">
 
     <div class="header">
-        <div class="title">NEON FILE NODE</div>
+        <div class="title">FILESYNC</div>
         <div class="subtitle">Local network transfer interface</div>
     </div>
 
