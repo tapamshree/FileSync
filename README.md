@@ -48,7 +48,18 @@ That is it. The server starts, prints a clickable link and a scannable QR code, 
 
 ### Option 2 -- Install as a CLI Tool
 
-First, install the package:
+clone the repo:
+
+```bash
+git clone https://github.com/tapamshree/FileSync.git
+```
+go to the directory:
+
+```bash
+cd FileSync
+```
+
+install the package:
 
 ```bash
 pip install .
