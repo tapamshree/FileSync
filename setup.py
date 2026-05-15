@@ -6,6 +6,9 @@ setup(
     description="Share files instantly on your local network",
     py_modules=["share"],
     python_requires=">=3.6",
+    install_requires=[
+        "qrcode",
+    ],
     entry_points={
         "console_scripts": [
             "proshare=share:main",
