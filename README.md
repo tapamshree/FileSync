@@ -22,8 +22,9 @@ Whether you need to push a build artifact to a colleague sitting across the room
 - **Auto IP Detection** -- Automatically finds and displays your local network address
 - **File Upload and Download** -- Drag-and-drop or click to upload; one-click download for recipients
 - **Multiple File Upload** -- Select and upload several files at once in a single operation
+- **QR Code on Launch** -- A scannable QR code is printed directly in the terminal so mobile devices can connect instantly without typing the URL
 - **Local Network Friendly** -- Works on any shared WiFi or Ethernet network out of the box
-- **Lightweight** -- Built entirely on Python's standard library with no third-party dependencies
+- **Lightweight** -- Pure Python with a single lightweight dependency (`qrcode`) for terminal QR code generation
 - **Organized Storage** -- Uploaded files are placed in an auto-created `uploads/` directory
 - **Clean Server Logs** -- Per-request noise is suppressed for a tidy terminal experience
 - **Graceful Shutdown** -- Press Ctrl+C and the server stops cleanly without tracebacks
@@ -35,7 +36,7 @@ Whether you need to push a build artifact to a colleague sitting across the room
 ### Prerequisites
 
 - Python 3.6 or later
-- No additional dependencies (uses the Python standard library exclusively)
+- The `qrcode` package (installed automatically when you `pip install .`)
 
 ### Option 1 -- Run Directly
 
@@ -43,7 +44,7 @@ Whether you need to push a build artifact to a colleague sitting across the room
 python share.py
 ```
 
-That is it. The server starts, prints a clickable link, and you are ready to share files.
+That is it. The server starts, prints a clickable link and a scannable QR code, and you are ready to share files.
 
 ### Option 2 -- Install as a CLI Tool
 
@@ -64,10 +65,12 @@ After installation, the `proshare` command is available system-wide, so you can 
 ### Example Output
 
 ```
-  FileSync
-  http://192.168.1.100:6969
-  Serving: C:\Users\you\Documents
-  Ctrl+C to stop
+  [*] FileSync
+  [>] http://192.168.1.100:6969
+  [~] Serving: C:\Users\you\Documents
+  [!] Ctrl+C to stop
+
+  [QR Code appears here -- scan with any phone camera to open instantly]
 ```
 
 ---
@@ -97,10 +100,10 @@ proshare --port 8080 --dir ./project-assets
 ## How to Use
 
 1. **Start the server** using either `python share.py` or the installed `proshare` command.
-2. **Open the printed URL** in any browser on your local network.
+2. **Scan the QR code** shown in the terminal with your phone camera, or open the printed URL in any browser on your local network.
 3. **Upload files** by clicking "Choose File" (or dragging files onto the input area) and pressing "Upload". Multiple files can be selected and uploaded in one go.
 4. **Download files** by clicking the download button next to any listed file.
-5. **Share with others** by giving them the URL. They can upload and download files immediately -- no software installation required on their end.
+5. **Share with others** by letting them scan the same QR code or giving them the URL. They can upload and download files immediately -- no software installation required on their end.
 
 ---
 
@@ -209,7 +212,7 @@ Or stop whatever process is occupying the default port.
 - Access from the same machine using `localhost:6969`
 - Bookmark the URL for quick repeat access during a work session
 - Assign a static IP to your host machine for a consistent address across reboots
-- Mobile browsers work perfectly -- share the URL via QR code for maximum convenience
+- Mobile browsers work perfectly -- just scan the QR code printed in the terminal to connect instantly
 - Install with `pip install .` once and forget about script paths entirely
 
 ---
