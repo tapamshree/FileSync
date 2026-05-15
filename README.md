@@ -1,75 +1,110 @@
-# 🌐 FileSync
+# FileSync
 
-**A sleek, cyberpunk-styled local file sharing server with zero configuration.**
+**A sleek, local file sharing server with zero configuration.**
 
-Share files instantly across your local network with a stunning glassmorphic UI and automatic network detection.
-
----
-
-##  Features
-
--  **Zero Config** - Just run and share
--  **Auto IP Detection** - Automatically finds your local IP address
--  **File Upload/Download** - Drag-and-drop file sharing
--  **Local Network Friendly** - Perfect for teams, classrooms, and quick transfers
--  **Lightweight** - Built with Python's standard library
--  **Organized Storage** - Auto-creates upload directory
+Share files instantly across your local network with a stunning glassmorphic UI, automatic network detection, and a single command to get started. No accounts, no cloud, no nonsense -- just run it and share.
 
 ---
 
-##  Quick Start
+## Why FileSync
+
+Most file sharing tools demand sign-ups, cloud storage, or convoluted setup steps. FileSync takes a radically different approach: run one command and every device on your network can upload and download files through a polished browser interface. There is nothing to install on the receiving end, no browser extensions, and no configuration files to edit. It is as convenient as it gets for local file transfers.
+
+Whether you need to push a build artifact to a colleague sitting across the room, hand out lecture slides to a classroom, or move photos between your phone and laptop, FileSync gets the job done in seconds rather than minutes.
+
+---
+
+## Features
+
+- **Zero Config** -- Run a single command and start sharing immediately
+- **Pip Installable** -- Install once with `pip install .` and use the `proshare` command from anywhere
+- **CLI Arguments** -- Customize port and serving directory at launch without editing source code
+- **Auto IP Detection** -- Automatically finds and displays your local network address
+- **File Upload and Download** -- Drag-and-drop or click to upload; one-click download for recipients
+- **Multiple File Upload** -- Select and upload several files at once in a single operation
+- **Local Network Friendly** -- Works on any shared WiFi or Ethernet network out of the box
+- **Lightweight** -- Built entirely on Python's standard library with no third-party dependencies
+- **Organized Storage** -- Uploaded files are placed in an auto-created `uploads/` directory
+- **Clean Server Logs** -- Per-request noise is suppressed for a tidy terminal experience
+- **Graceful Shutdown** -- Press Ctrl+C and the server stops cleanly without tracebacks
+
+---
+
+## Quick Start
 
 ### Prerequisites
-- Python 3.6+
-- No additional dependencies (uses Python standard library!)
 
-### Installation & Usage
+- Python 3.6 or later
+- No additional dependencies (uses the Python standard library exclusively)
 
-1. **Clone or download this project**
+### Option 1 -- Run Directly
 
-2. **Run the server:**
 ```bash
 python share.py
 ```
 
-3. **Access in your browser:**
-   - The script will output your local IP address
-   - Open that link in any browser on your network by clicking on it or copy pasting. eg - `http://<your-local-ip>:6969`
-   - Start uploading and sharing files!
+That is it. The server starts, prints a clickable link, and you are ready to share files.
+
+### Option 2 -- Install as a CLI Tool
+
+```bash
+pip install .
+proshare
+```
+
+After installation, the `proshare` command is available system-wide, so you can launch FileSync from any directory without referencing the script path. This is especially convenient when you want to quickly serve files from arbitrary folders.
 
 ### Example Output
+
 ```
-FileSync running on http://192.168.1.100:6969
-Listening on port 6969...
+  FileSync
+  http://192.168.1.100:6969
+  Serving: C:\Users\you\Documents
+  Ctrl+C to stop
 ```
 
 ---
 
-##  How to Use
+## CLI Options
 
-1. **Upload Files**
-   - Click "Choose File" or drag files onto the upload area
-   - Click "Upload" button
-   - File is instantly available for download
+FileSync accepts command-line arguments so you never need to edit the source code for common adjustments:
 
-2. **Download Files**
-   - Browse the files list
-   - Click on any file to download it
+```bash
+# Use a custom port
+proshare --port 8080
 
-3. **Share with Others**
-   - Give them the URL (e.g., `http://192.168.1.100:6969`)
-   - They can upload and download files immediately
+# Serve a specific directory
+proshare --dir /path/to/shared/folder
+
+# Combine both
+proshare --port 8080 --dir ./project-assets
+```
+
+| Flag     | Default              | Description                         |
+|----------|----------------------|-------------------------------------|
+| `--port` | `6969`               | Port the server listens on          |
+| `--dir`  | Current directory    | Root directory to serve and browse  |
+
+---
+
+## How to Use
+
+1. **Start the server** using either `python share.py` or the installed `proshare` command.
+2. **Open the printed URL** in any browser on your local network.
+3. **Upload files** by clicking "Choose File" (or dragging files onto the input area) and pressing "Upload". Multiple files can be selected and uploaded in one go.
+4. **Download files** by clicking the download button next to any listed file.
+5. **Share with others** by giving them the URL. They can upload and download files immediately -- no software installation required on their end.
 
 ---
 
 ## Configuration
 
-Edit `share.py` to customize:
+While CLI flags cover most use cases, you can also edit the defaults directly in `share.py`:
 
 ```python
-PORT = 6969                    # Change server port
-BASE_DIR = os.getcwd()         # Change base directory
-UPLOAD_DIR = os.path.join(...) # Change upload location
+PORT = 6969                    # Default server port
+BASE_DIR = os.getcwd()         # Default base directory
+UPLOAD_DIR = os.path.join(...) # Upload storage location
 ```
 
 ---
@@ -77,99 +112,105 @@ UPLOAD_DIR = os.path.join(...) # Change upload location
 ## Project Structure
 
 ```
-testfolder/
-├── share.py              # Main server
-├── README.md             # This file
-├── uploads/              # Shared files directory (auto-created)
-└── message-history.json  # (if applicable)
+filesync/
+  share.py              # Main server (HTTP handler, HTML/CSS/JS UI, CLI entry point)
+  Setup.py              # Package configuration for pip installation
+  README.md             # This file
+  uploads/              # Shared files directory (auto-created at runtime)
 ```
 
 ---
 
 ## Use Cases
 
-- **Team Projects** - Quickly share files between team members
-- **Classroom** - Distribute assignments and collect submissions
-- **Home Network** - Easy file transfers between devices
-- **Local Events** - Share photos and documents with attendees
-- **Development** - Share build artifacts and test data
+- **Team projects** -- Share build outputs, design files, and documents between team members without leaving the local network
+- **Classrooms** -- Distribute assignments and collect submissions with zero student setup
+- **Home network** -- Move files between a desktop, laptop, phone, and tablet effortlessly
+- **Local events** -- Let attendees grab photos, schedules, or handouts from a single URL
+- **Development** -- Serve test data, binaries, or logs to other machines during debugging
 
 ---
 
-##  Network Access
+## Network Access
 
-The server is accessible to any device on your local network:
-- **Same WiFi** ✅ Works great
-- **Ethernet connected** ✅ Works great
-- **Internet** ❌ Not accessible from outside your network (secure by design)
+FileSync binds to `0.0.0.0`, making it reachable from any device on your local network:
 
----
-
-##  UI Features
-
-- **Responsive Design** - Works on desktop, tablet, and mobile
-- **Dark Theme** - Easy on the eyes with neon accents
-- **Glassmorphic Effects** - Modern blur and transparency effects
-- **Smooth Animations** - Hover effects and transitions
-- **Real-time File List** - Updates instantly after upload
+- **Same WiFi** -- Works immediately
+- **Ethernet connected** -- Works immediately
+- **Internet** -- Not accessible from outside your network (this is secure by design)
 
 ---
 
-##  Technical Details
+## UI Highlights
 
-- **HTTP Server** - Uses Python's built-in `HTTPServer`
-- **Request Handler** - Custom `BaseHTTPRequestHandler` implementation
-- **File Operations** - Safe file handling with MIME type detection
-- **IP Detection** - Smart socket-based local IP detection
-- **Responsive Frontend** - HTML/CSS/JavaScript single-page interface
+The browser interface is a single-page application embedded directly in the server response -- no static files to manage:
+
+- **Responsive layout** -- Adapts to desktop, tablet, and mobile screen sizes
+- **Dark theme** -- A deep, high-contrast dark palette with neon accent colors
+- **Glassmorphic panels** -- Modern blur and transparency effects using `backdrop-filter`
+- **Smooth animations** -- Hover transitions on buttons and file download links
+- **Real-time file list** -- Refreshes automatically after each upload
 
 ---
 
-##  Troubleshooting
+## Technical Details
+
+- **Server** -- Python's built-in `HTTPServer` with a custom `BaseHTTPRequestHandler` subclass
+- **Routing** -- GET `/` serves the UI, GET `/files` returns a JSON file list, GET `/download?file=` streams a file, POST `/` handles multipart uploads
+- **IP detection** -- Uses a UDP socket trick to determine the machine's LAN address without external requests
+- **MIME handling** -- Automatic content-type detection via `mimetypes` for correct file downloads
+- **Architecture** -- The `main()` entry point parses arguments, builds the HTML template, and starts the server, making the module both runnable and importable
+
+---
+
+## Troubleshooting
 
 ### "Port already in use"
+
 ```bash
-# Change PORT in share.py or use:
-python share.py --port 7777
+proshare --port 7777
 ```
 
-### "Can't access from other devices"
-- Ensure devices are on the same network
-- Check Windows Firewall allows Python
-- Try accessing `http://localhost:6969` first to test
+Or stop whatever process is occupying the default port.
+
+### "Cannot access from other devices"
+
+- Verify all devices are on the same network
+- Check that your firewall allows inbound connections to the chosen port
+- Test locally first with `http://localhost:6969` to confirm the server is running
 
 ### "Files not uploading"
-- Check `uploads/` directory exists and is writable
-- Ensure disk has free space
-- Check file size limits
+
+- Confirm the `uploads/` directory exists and is writable (it is created automatically, but permissions may vary)
+- Check available disk space
+- Look at the terminal for any Python error messages
 
 ---
 
-##  Security Notes
+## Security Notes
 
-- This is a **local network only** tool
-- Files are stored in plain text
-- No authentication by default
-- Best used on trusted networks
-- Not recommended for sensitive data without additional security
-
----
-
-##  Pro Tips
-
-- Use `localhost:6969` for accessing from the same machine
-- Pin the URL to your browser bookmarks for quick access
-- Set up a static IP for your device for consistent access
-- Works great on mobile browsers too!
+- This is a **local network only** tool -- it is not designed for public-facing deployment
+- Files are stored in plain form with no encryption at rest
+- There is no authentication or access control by default
+- Use only on trusted networks
+- Not recommended for sensitive or confidential data without additional security layers
 
 ---
 
-##  Support
+## Tips
 
-Found a bug? Have a feature request? Feel free to open an issue!
+- Access from the same machine using `localhost:6969`
+- Bookmark the URL for quick repeat access during a work session
+- Assign a static IP to your host machine for a consistent address across reboots
+- Mobile browsers work perfectly -- share the URL via QR code for maximum convenience
+- Install with `pip install .` once and forget about script paths entirely
 
 ---
 
-**Made with ❤️ using Python**
+## Support
 
-Happy sharing! 
+Found a bug or have a feature request? Open an issue on the repository.
+
+---
+
+**Made with Python. Built for convenience.**
