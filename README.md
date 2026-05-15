@@ -47,8 +47,15 @@ That is it. The server starts, prints a clickable link, and you are ready to sha
 
 ### Option 2 -- Install as a CLI Tool
 
+First, install the package:
+
 ```bash
 pip install .
+```
+
+Then launch FileSync from anywhere using:
+
+```bash
 proshare
 ```
 
