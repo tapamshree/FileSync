@@ -2,8 +2,9 @@
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import os, urllib.parse, mimetypes, json, re, socket, argparse
+import qrcode
 
-# Globals — set by main() before server starts
+# Globals
 PORT = 6969
 BASE_DIR = os.getcwd()
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
@@ -19,6 +20,16 @@ def get_local_ip():
         return ip
     except:
         return "127.0.0.1"
+
+
+def print_qr(url):
+    qr = qrcode.QRCode(border=1)
+    qr.add_data(url)
+    qr.make(fit=True)
+
+    print("\n  Scan to open FileSync:\n")
+    qr.print_ascii(invert=True)
+    print()
 
 
 def build_html(port):
@@ -75,7 +86,6 @@ body::before {{
   background: linear-gradient(90deg, #22d3ee, #34d399, #818cf8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 25px rgba(56,189,248,.35);
 }}
 
 .subtitle {{
@@ -88,22 +98,6 @@ body::before {{
   backdrop-filter: blur(25px);
   border-radius: 22px;
   border: 1px solid rgba(255,255,255,.08);
-  box-shadow:
-    0 0 0 1px rgba(34,211,238,.08),
-    0 30px 80px rgba(0,0,0,.7);
-  position: relative;
-}}
-
-.glass::before {{
-  content:'';
-  position:absolute;
-  inset:0;
-  border-radius:22px;
-  background: linear-gradient(120deg, transparent, rgba(56,189,248,.12), transparent);
-  pointer-events:none;
-}}
-
-.upload {{
   padding: 36px;
   margin-bottom: 42px;
 }}
@@ -129,139 +123,106 @@ button {{
   border-radius: 14px;
   border: none;
   font-family: 'Orbitron';
-  letter-spacing: 1px;
   background: linear-gradient(135deg,#22d3ee,#6366f1);
   color: #020617;
   cursor: pointer;
-  transition: .25s;
-  box-shadow: 0 0 30px rgba(56,189,248,.35);
-}}
-
-button:hover {{
-  transform: translateY(-2px);
-  box-shadow: 0 0 45px rgba(56,189,248,.6);
-}}
-
-.files {{
-  padding: 36px;
-}}
-
-.files h2 {{
-  font-family: 'Orbitron';
-  font-size: 22px;
-  margin-bottom: 26px;
-  letter-spacing: 1px;
 }}
 
 .file {{
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 16px 20px;
+  padding: 14px;
   margin-bottom: 12px;
-  border-radius: 16px;
+  border-radius: 14px;
   background: rgba(255,255,255,.05);
-  border: 1px solid rgba(255,255,255,.1);
-}}
-
-.file-name {{
-  min-width: 0;
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: 600;
 }}
 
 .file a {{
-  flex-shrink: 0;
-  padding: 8px 18px;
-  border-radius: 10px;
-  font-family: 'Orbitron';
-  font-size: 13px;
-  text-decoration: none;
   color: #67e8f9;
-  border: 1px solid rgba(34,211,238,.5);
-  background: rgba(34,211,238,.12);
-  transition: .2s;
-}}
-
-.file a:hover {{
-  background: rgba(34,211,238,.3);
+  text-decoration: none;
 }}
 
 .empty {{
   text-align: center;
-  padding: 60px 0;
   color: #9ca3af;
 }}
 
 .footer {{
-  margin-top: 48px;
   text-align: center;
-  font-size: 13px;
   color: #6b7280;
 }}
 </style>
 </head>
 <body>
+
 <div class="container">
-  <div class="header">
-    <div class="title">FILESYNC</div>
-    <div class="subtitle">Local network transfer interface</div>
-  </div>
-
-  <div class="glass upload">
-    <div class="upload-area">
-      <input type="file" id="file" multiple>
-      <button onclick="upload()">UPLOAD</button>
+    <div class="header">
+        <div class="title">FILESYNC</div>
+        <div class="subtitle">Local network transfer interface</div>
     </div>
-  </div>
 
-  <div class="glass files">
-    <h2>AVAILABLE FILES</h2>
-    <div id="files"></div>
-  </div>
+    <div class="glass">
+        <div class="upload-area">
+            <input type="file" id="file" multiple>
+            <button onclick="upload()">UPLOAD</button>
+        </div>
+    </div>
 
-  <div class="footer">
-    PORT {port} • SYSTEM ONLINE
-  </div>
+    <div class="glass">
+        <h2>AVAILABLE FILES</h2>
+        <div id="files"></div>
+    </div>
+
+    <div class="footer">
+        PORT {port} • SYSTEM ONLINE
+    </div>
 </div>
 
 <script>
 async function upload() {{
-  const i = document.getElementById('file');
-  if (!i.files.length) return;
-  for (const f of i.files) {{
-    const fd = new FormData();
-    fd.append("file", f);
-    await fetch("/", {{method:"POST", body:fd}});
-  }}
-  i.value = "";
-  loadFiles();
+    const input = document.getElementById('file');
+
+    if (!input.files.length) return;
+
+    for (const f of input.files) {{
+        const fd = new FormData();
+        fd.append("file", f);
+
+        await fetch("/", {{
+            method: "POST",
+            body: fd
+        }});
+    }}
+
+    input.value = "";
+    loadFiles();
 }}
 
 async function loadFiles() {{
-  const r = await fetch("/files");
-  const files = await r.json();
-  const d = document.getElementById("files");
-  if (!files.length) {{
-    d.innerHTML = '<div class="empty">NO FILES DETECTED</div>';
-    return;
-  }}
-  d.innerHTML = "";
-  files.forEach(f => {{
-    d.innerHTML += `
-      <div class="file">
-        <div class="file-name">${{f}}</div>
-        <a href="/download?file=${{encodeURIComponent(f)}}">DOWNLOAD</a>
-      </div>`;
-  }});
+    const res = await fetch("/files");
+    const files = await res.json();
+
+    const div = document.getElementById("files");
+
+    if (!files.length) {{
+        div.innerHTML = '<div class="empty">NO FILES DETECTED</div>';
+        return;
+    }}
+
+    div.innerHTML = "";
+
+    files.forEach(f => {{
+        div.innerHTML += `
+        <div class="file">
+            <div>${{f}}</div>
+            <a href="/download?file=${{encodeURIComponent(f)}}">DOWNLOAD</a>
+        </div>`;
+    }});
 }}
 
 loadFiles();
 </script>
+
 </body>
 </html>
 """
@@ -270,17 +231,20 @@ loadFiles();
 class Handler(BaseHTTPRequestHandler):
 
     def log_message(self, format, *args):
-        # Suppress default per-request logs for cleaner CLI output
         pass
 
     def do_GET(self):
         p = urllib.parse.urlparse(self.path)
+
         if p.path == "/":
             self.send_html()
+
         elif p.path == "/files":
             self.send_files()
+
         elif p.path == "/download":
             self.send_file(p.query)
+
         else:
             self.send_error(404)
 
@@ -288,13 +252,17 @@ class Handler(BaseHTTPRequestHandler):
         length = int(self.headers["Content-Length"])
         boundary = self.headers["Content-Type"].split("boundary=")[1].encode()
         body = self.rfile.read(length)
+
         for part in body.split(boundary):
             if b'filename="' in part:
                 name = re.search(b'filename="(.+?)"', part)
+
                 filename = os.path.basename(name.group(1).decode())
                 data = part.split(b"\r\n\r\n", 1)[1].rstrip(b"\r\n")
+
                 with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
                     f.write(data)
+
         self.send_response(200)
         self.end_headers()
 
@@ -306,22 +274,32 @@ class Handler(BaseHTTPRequestHandler):
 
     def send_files(self):
         files = sorted(
-            f for f in os.listdir(BASE_DIR)
-            if os.path.isfile(os.path.join(BASE_DIR, f)) and not f.startswith(".")
+            f for f in os.listdir(UPLOAD_DIR)
+            if os.path.isfile(os.path.join(UPLOAD_DIR, f))
         )
+
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
         self.wfile.write(json.dumps(files).encode())
 
     def send_file(self, query):
-        f = os.path.basename(urllib.parse.parse_qs(query)["file"][0])
-        path = os.path.join(BASE_DIR, f)
+        f = os.path.basename(
+            urllib.parse.parse_qs(query)["file"][0]
+        )
+
+        path = os.path.join(UPLOAD_DIR, f)
+
         mime = mimetypes.guess_type(path)[0] or "application/octet-stream"
+
         self.send_response(200)
         self.send_header("Content-Type", mime)
-        self.send_header("Content-Disposition", f'attachment; filename="{f}"')
+        self.send_header(
+            "Content-Disposition",
+            f'attachment; filename="{f}"'
+        )
         self.end_headers()
+
         with open(path, "rb") as fh:
             self.wfile.write(fh.read())
 
@@ -329,16 +307,21 @@ class Handler(BaseHTTPRequestHandler):
 def parse_args():
     parser = argparse.ArgumentParser(
         prog="proshare",
-        description="ProShare -- Share files instantly on your local network"
+        description="ProShare -- Share files instantly"
     )
+
     parser.add_argument(
-        "--port", type=int, default=6969,
-        help="Port to run on (default: 6969)"
+        "--port",
+        type=int,
+        default=6969
     )
+
     parser.add_argument(
-        "--dir", type=str, default=os.getcwd(),
-        help="Directory to serve (default: current directory)"
+        "--dir",
+        type=str,
+        default=os.getcwd()
     )
+
     return parser.parse_args()
 
 
@@ -346,17 +329,24 @@ def main():
     global PORT, BASE_DIR, UPLOAD_DIR, HTML
 
     args = parse_args()
+
     PORT = args.port
     BASE_DIR = os.path.abspath(args.dir)
     UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
+
     os.makedirs(UPLOAD_DIR, exist_ok=True)
+
     HTML = build_html(PORT)
 
     ip = get_local_ip()
+    url = f"http://{ip}:{PORT}"
+
     print(f"\n  [*] FileSync")
-    print(f"  [>] http://{ip}:{PORT}")
-    print(f"  [~] Serving: {BASE_DIR}")
-    print(f"  [!] Ctrl+C to stop\n")
+    print(f"  [>] {url}")
+    print(f"  [~] Serving: {UPLOAD_DIR}")
+    print(f"  [!] Ctrl+C to stop")
+
+    print_qr(url)
 
     try:
         HTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
