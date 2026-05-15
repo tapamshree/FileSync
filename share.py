@@ -24,6 +24,10 @@ def get_local_ip():
 
 def print_qr(url):
     import sys
+    import os
+    if os.name == 'nt':
+        os.system('chcp 65001 >nul 2>&1')
+        
     if hasattr(sys.stdout, "reconfigure"):
         try:
             sys.stdout.reconfigure(encoding='utf-8')
