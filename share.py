@@ -329,7 +329,7 @@ class Handler(BaseHTTPRequestHandler):
 def parse_args():
     parser = argparse.ArgumentParser(
         prog="proshare",
-        description="📁 ProShare — Share files instantly on your local network"
+        description="ProShare -- Share files instantly on your local network"
     )
     parser.add_argument(
         "--port", type=int, default=6969,
@@ -353,15 +353,15 @@ def main():
     HTML = build_html(PORT)
 
     ip = get_local_ip()
-    print(f"\n  📁  FileSync")
-    print(f"  🔗  http://{ip}:{PORT}")
-    print(f"  📂  Serving: {BASE_DIR}")
-    print(f"  🛑  Ctrl+C to stop\n")
+    print(f"\n  [*] FileSync")
+    print(f"  [>] http://{ip}:{PORT}")
+    print(f"  [~] Serving: {BASE_DIR}")
+    print(f"  [!] Ctrl+C to stop\n")
 
     try:
         HTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
     except KeyboardInterrupt:
-        print("\n  👋  FileSync stopped.\n")
+        print("\n  FileSync stopped.\n")
 
 
 if __name__ == "__main__":
