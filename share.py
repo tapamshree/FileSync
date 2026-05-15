@@ -23,12 +23,22 @@ def get_local_ip():
 
 
 def print_qr(url):
+    import sys
+    if hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(encoding='utf-8')
+        except Exception:
+            pass
+
     qr = qrcode.QRCode(border=1)
     qr.add_data(url)
     qr.make(fit=True)
 
     print("\n  Scan to open FileSync:\n")
-    qr.print_ascii(invert=True)
+    try:
+        qr.print_ascii(invert=True)
+    except UnicodeEncodeError:
+        print("  [QR Code cannot be displayed in this terminal encoding]")
     print()
 
 
