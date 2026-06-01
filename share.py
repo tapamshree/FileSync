@@ -7,7 +7,7 @@ import qrcode
 # Globals
 PORT = 6969
 BASE_DIR = os.getcwd()
-UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
+UPLOAD_DIR = BASE_DIR
 HTML = ""
 
 
@@ -346,9 +346,7 @@ def main():
 
     PORT = args.port
     BASE_DIR = os.path.abspath(args.dir)
-    UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
-
-    os.makedirs(UPLOAD_DIR, exist_ok=True)
+    UPLOAD_DIR = BASE_DIR
 
     HTML = build_html(PORT)
 
